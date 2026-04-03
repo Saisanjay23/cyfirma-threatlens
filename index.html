@@ -52,27 +52,7 @@
       --border-radius-lg: 8px;
     }
 
-    [data-theme="light"] {
-      --bg-base: #ffffff;
-      --bg-surface: #FFFFFF;
-      --bg-elevated: #F2F4F7;
-      --accent: #8838DD;
-      --accent-glow: #9A50E9;
-      --accent-soft: rgba(136, 56, 221, 0.12);
-      --danger: #E95053;
-      --warning: #D97706;
-      --success: #00C14D;
-      --critical: #DD383B;
-      --text-primary: #1f2328;
-      --text-muted: #656d76;
-      --text-dim: #656d76;
-      --border: rgba(0, 0, 0, 0.08);
-      --border-focus: rgba(136, 56, 221, 0.5);
-      --nav-bg: rgba(255, 255, 255, 0.85);
-      --gauge-bg: rgba(0, 0, 0, 0.06);
-      --shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-      --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.08);
-    }
+
 
     html {
       font-size: 14px;
@@ -1146,8 +1126,8 @@
       --bs-card-inner-border-radius: calc(.375rem - 1px);
       --bs-card-cap-padding-y: .5rem;
       --bs-card-cap-padding-x: 1rem;
-      --bs-card-cap-bg: rgba(0, 0, 0, .03);
-      --bs-card-bg: #fff;
+      --bs-card-cap-bg: rgba(0, 0, 0, .2);
+      --bs-card-bg: var(--bg-surface);
       --bs-card-img-overlay-padding: 1rem;
       --bs-card-group-margin: .75rem;
       position: relative;
@@ -1188,7 +1168,6 @@
 
     body {
       font-family: Nunito, sans-serif;
-      overflow: hidden;
       margin: 0;
       font-size: var(--bs-body-font-size);
       font-weight: var(--bs-body-font-weight);
@@ -1368,7 +1347,6 @@
       <a href="#" onclick="switchPage('tools',this);return false">Deep Dive Tools</a>
       <a href="#" onclick="switchPage('ioc',this);return false">IOC Radar</a>
       <a href="#" onclick="switchPage('cve',this);return false">CVE Radar</a>
-      <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Theme">🌞</button>
     </div>
   </nav>
 
