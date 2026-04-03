@@ -211,6 +211,7 @@ a{color:var(--accent);text-decoration:none}
     <button class="tab-btn" data-tab="grader" aria-label="Email Grader">⭐ Email Grader</button>
     <button class="tab-btn" data-tab="breach" aria-label="Breach Check">🔓 Breach Check</button>
     <button class="tab-btn" data-tab="domain" aria-label="Domain Intel">🌐 Domain Intel</button>
+    <button class="tab-btn" data-tab="impersonation" aria-label="Domain Impersonation">🎭 Impersonation</button>
   </div>
 
   <!-- TOOL 1: IP REPUTATION -->
@@ -296,6 +297,15 @@ a{color:var(--accent);text-decoration:none}
       <button class="btn-scan" onclick="scanDomainIntel()">🌐 INVESTIGATE DOMAIN</button>
     </div>
     <div id="domainResults"></div>
+  </section>
+
+  <!-- TOOL 9: DOMAIN IMPERSONATION -->
+  <section class="tool-panel" id="panel-impersonation">
+    <div class="search-bar">
+      <input type="text" id="impersonInput" placeholder="Enter your legitimate domain to find impersonators (e.g. cyfirma.com)" aria-label="Domain">
+      <button class="btn-scan" onclick="scanImpersonation()">🎭 DETECT IMPERSONATORS</button>
+    </div>
+    <div id="impersonResults"></div>
   </section>
 
 </main>
@@ -1194,6 +1204,123 @@ ${vulns.map(v=>{
 </tbody></table></div></div>`;
 showToast(`\ud83d\udee1\ufe0f ${total} CVEs found for "${query}"`);
 }catch(e){hideLoading(el);showError(el,'CVE search failed: '+e.message)}}
+
+// ===== TOOL 9: DOMAIN IMPERSONATION =====
+function generateImpersonations(domain){
+const parts=domain.split('.');const name=parts[0];const tld=parts.slice(1).join('.');
+const results=[];
+const addResult=(d,type,risk)=>{if(d!==domain&&!results.find(r=>r.domain===d))results.push({domain:d,type,risk})};
+// 1. Character omission
+for(let i=0;i<name.length;i++){addResult(name.slice(0,i)+name.slice(i+1)+'.'+tld,'Character Omission','High')}
+// 2. Adjacent character swap
+for(let i=0;i<name.length-1;i++){const a=name.split('');const t=a[i];a[i]=a[i+1];a[i+1]=t;addResult(a.join('')+'.'+tld,'Character Swap','High')}
+// 3. Adjacent key typo (QWERTY)
+const qwerty={q:'wa',w:'qeas',e:'wsdr',r:'edft',t:'rfgy',y:'tghu',u:'yhji',i:'ujko',o:'iklp',p:'ol',a:'qwsz',s:'weadxz',d:'ercsfx',f:'rtdgcv',g:'tyfhvb',h:'uygjbn',j:'iuhknm',k:'iojlm',l:'opk',z:'asx',x:'zsdc',c:'xdfv',v:'cfgb',b:'vghn',n:'bhjm',m:'njk'};
+for(let i=0;i<name.length;i++){const adj=qwerty[name[i]]||'';for(const c of adj){const a=name.split('');a[i]=c;addResult(a.join('')+'.'+tld,'Typosquatting','High')}}
+// 4. Character repetition
+for(let i=0;i<name.length;i++){addResult(name.slice(0,i+1)+name[i]+name.slice(i+1)+'.'+tld,'Character Repeat','Medium')}
+// 5. Homoglyphs
+const homoglyphs={a:['4'],e:['3'],i:['1','l'],o:['0'],s:['5'],t:['7'],l:['1','i'],g:['9','q'],b:['d','6'],d:['b'],n:['m'],u:['v'],c:['k'],w:['vv'],m:['nn','rn']};
+for(let i=0;i<name.length;i++){const hs=homoglyphs[name[i]]||[];for(const h of hs){addResult(name.slice(0,i)+h+name.slice(i+1)+'.'+tld,'Homoglyph','Critical')}}
+// 6. TLD variations
+const tlds=['com','net','org','io','co','info','biz','xyz','online','site','app','dev','tech','cloud','pro','us','uk','in','co.in','co.uk'];
+for(const t of tlds){if(t!==tld)addResult(name+'.'+t,'TLD Swap','Medium')}
+// 7. Hyphenation
+for(let i=1;i<name.length;i++){addResult(name.slice(0,i)+'-'+name.slice(i)+'.'+tld,'Hyphenation','Medium')}
+// 8. Keyword addition
+const prefixes=['my','get','login','secure','account','mail','portal','support'];
+const suffixes=['online','login','secure','portal','app','web','site','help'];
+for(const p of prefixes){addResult(p+name+'.'+tld,'Keyword Prefix','High')}
+for(const s of suffixes){addResult(name+s+'.'+tld,'Keyword Suffix','High')}
+// 9. Dot insertion (subdomain abuse)
+for(let i=1;i<name.length;i++){addResult(name.slice(0,i)+'.'+name.slice(i)+'.'+tld,'Dot Insert','High')}
+// 10. Vowel swap
+const vowels='aeiou';
+for(let i=0;i<name.length;i++){if(vowels.includes(name[i])){for(const v of vowels){if(v!==name[i]){addResult(name.slice(0,i)+v+name.slice(i+1)+'.'+tld,'Vowel Swap','Medium')}}}}
+return results.slice(0,200);}
+
+async function checkDNSResolve(d){try{const r=await fetch('https://dns.google/resolve?name='+d+'&type=A');const j=await r.json();return j.Answer&&j.Answer.length>0?j.Answer[0].data:null}catch(e){return null}}
+
+async function scanImpersonation(){
+let domain=document.getElementById('impersonInput').value.trim().toLowerCase().replace(/^https?:\/\//,'').replace(/\/.*/,'');
+if(!domain||!domain.includes('.')){showToast('Enter a valid domain','error');return}
+const el=document.getElementById('impersonResults');showLoading(el);
+const candidates=generateImpersonations(domain);
+const topCandidates=candidates.slice(0,80);
+const batchSize=10;
+let registered=[];
+let checked=0;
+for(let i=0;i<topCandidates.length;i+=batchSize){
+ const batch=topCandidates.slice(i,i+batchSize);
+ const results=await Promise.allSettled(batch.map(c=>checkDNSResolve(c.domain).then(ip=>({...c,ip}))));
+ results.forEach(r=>{if(r.value&&r.value.ip)registered.push(r.value)});
+ checked+=batch.length;
+}
+hideLoading(el);
+const riskCounts={Critical:0,High:0,Medium:0,Low:0};
+registered.forEach(r=>riskCounts[r.risk]=(riskCounts[r.risk]||0)+1);
+const totalReg=registered.length;
+const overallRisk=totalReg>10?'CRITICAL':totalReg>5?'HIGH':totalReg>0?'MEDIUM':'LOW';
+const riskColor=overallRisk==='CRITICAL'?'var(--danger)':overallRisk==='HIGH'?'var(--warning)':'var(--accent)';
+
+let html=`<div class="verdict-banner ${totalReg>5?'malware':totalReg>0?'phishing':'legitimate'}"><div style="font-size:36px">${totalReg>5?'\ud83d\udea8':totalReg>0?'\u26a0\ufe0f':'\u2705'}</div>
+<div><div class="verdict-label" style="color:${riskColor}">DOMAIN IMPERSONATION \u2014 ${overallRisk} RISK</div>
+<div class="verdict-score">${domain} \u00b7 ${candidates.length} lookalike domains generated \u00b7 ${checked} checked \u00b7 <strong style="color:var(--danger)">${totalReg} registered (active threats)</strong></div></div></div>
+<div class="summary-bar">
+<div class="summary-item"><div class="num">${candidates.length}</div><div class="lbl">Generated</div></div>
+<div class="summary-item"><div class="num">${checked}</div><div class="lbl">DNS Checked</div></div>
+<div class="summary-item"><div class="num" style="color:var(--danger)">${totalReg}</div><div class="lbl">Registered</div></div>
+<div class="summary-item"><div class="num" style="color:var(--danger)">${riskCounts.Critical||0}</div><div class="lbl">Critical</div></div>
+<div class="summary-item"><div class="num" style="color:var(--warning)">${riskCounts.High||0}</div><div class="lbl">High Risk</div></div></div>
+<div class="results-grid">`;
+
+if(totalReg>0){
+html+=`<div class="card full-width" style="${stagger(0)}"><div class="card-header"><div class="icon" style="background:rgba(239,68,68,0.15)">\ud83d\udea8</div><h3>Active Impersonation Threats (${totalReg} domains)</h3></div>
+<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">These lookalike domains are currently registered and resolving \u2014 potential phishing or brand abuse vectors</p>
+<table class="data-table"><thead><tr><th>Impersonator Domain</th><th>Resolved IP</th><th>Attack Type</th><th>Risk</th></tr></thead><tbody>
+${registered.sort((a,b)=>{const o={Critical:0,High:1,Medium:2,Low:3};return(o[a.risk]||3)-(o[b.risk]||3)}).map(r=>
+'<tr><td><span class="mono" style="color:var(--danger);font-size:12px">'+r.domain+'</span></td><td class="mono" style="font-size:11px">'+r.ip+'</td><td>'+r.type+'</td><td>'+badge(r.risk)+'</td></tr>').join('')}
+</tbody></table></div>`;
+}
+
+const techniques=[...new Set(candidates.map(c=>c.type))];
+html+=`<div class="card" style="${stagger(1)}"><div class="card-header"><div class="icon" style="background:rgba(139,92,246,0.12)">\ud83d\udcca</div><h3>Attack Techniques Used</h3></div>`;
+techniques.forEach(t=>{
+const cnt=candidates.filter(c=>c.type===t).length;
+const reg=registered.filter(r=>r.type===t).length;
+html+=detailRow(t,'<span class="mono">'+cnt+' generated</span>'+(reg?' <span style="color:var(--danger);font-weight:700">'+reg+' registered \u26a0\ufe0f</span>':''));
+});
+html+=`</div>`;
+
+html+=`<div class="card" style="${stagger(2)}"><div class="card-header"><div class="icon" style="background:rgba(16,185,129,0.12)">\ud83d\udee1\ufe0f</div><h3>Recommended Actions</h3></div>
+<ul class="rec-list">`;
+if(totalReg>0)html+='<li class="critical">Investigate '+totalReg+' registered impersonation domains for phishing or brand abuse</li>';
+if(riskCounts.Critical>0)html+='<li class="critical">'+riskCounts.Critical+' homoglyph domains detected \u2014 visually identical, highest phishing risk</li>';
+html+=`<li class="warn">Register key defensive domains (common misspellings and TLD variants)</li>
+<li>Set up domain monitoring alerts for new registrations matching your brand</li>
+<li>Implement DMARC policy to prevent email spoofing from lookalike domains</li>
+<li>Report confirmed phishing domains to registrars and Google Safe Browsing</li>
+<li>Consider using a brand protection service for continuous monitoring</li>
+</ul></div>`;
+
+if(totalReg===0){
+html+=`<div class="card full-width" style="${stagger(3)}"><div class="card-header"><div class="icon" style="background:rgba(16,185,129,0.12)">\u2705</div><h3>No Active Threats Detected</h3></div>
+<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:12px">\ud83c\udf89</div>
+<div class="card-value">All Clear</div>
+<div class="card-sub">None of the ${checked} checked lookalike domains appear to be registered. Continue monitoring for new registrations.</div></div></div>`;
+}
+
+html+=`<div class="card full-width" style="${stagger(4)}"><div class="card-header"><div class="icon" style="background:rgba(59,130,246,0.12)">\ud83d\udcdd</div><h3>All Generated Lookalike Domains (${candidates.length})</h3></div>
+<div style="max-height:250px;overflow-y:auto;display:flex;flex-wrap:wrap;gap:4px;padding:8px 0">`;
+candidates.forEach(c=>{
+const isReg=registered.find(r=>r.domain===c.domain);
+html+='<span class="mono" style="font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid '+(isReg?'var(--danger)':'var(--border)')+';background:'+(isReg?'rgba(239,68,68,0.1)':'var(--bg-base)')+';color:'+(isReg?'var(--danger)':'var(--text-dim)')+'">'+c.domain+'</span>';
+});
+html+=`</div></div></div>`;
+
+el.innerHTML=html;
+showToast('\ud83c\udfad '+totalReg+' impersonation domains found for '+domain);
+}
 </script>
 </body>
 </html>
