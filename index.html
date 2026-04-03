@@ -8,8 +8,9 @@
   <meta name="description"
     content="Free security investigation tools by CYFIRMA. Analyze IPs, detect phishing, test DoS resilience, audit VPN security, and grade email configurations.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
   <style>
     *,
@@ -21,14 +22,14 @@
     }
 
     :root {
-      /* CYFIRMA Dark Theme */
+      /* CYFIRMA Exact Theme — from cyfirma.com */
       --bg-base: #101828;
       --bg-surface: #1D2939;
       --bg-elevated: #344054;
       --accent: #8838DD;
       --accent-glow: #7727CD;
       --accent-soft: rgba(136, 56, 221, 0.15);
-      --danger: #E95053;
+      --danger: #B42318;
       --warning: #F59E0B;
       --success: #00C14D;
       --critical: #DD383B;
@@ -36,11 +37,11 @@
       --cyfirma-purple: #8838DD;
       --cyfirma-navy: #072359;
       --text-primary: #FFFFFF;
-      --text-muted: #D8D8D8;
+      --text-muted: #98A2B3;
       --text-dim: #667085;
-      --border: rgba(208, 213, 221, 0.15);
+      --border: rgba(234, 236, 240, 0.12);
       --border-focus: rgba(136, 56, 221, 0.5);
-      --nav-bg: rgba(16, 24, 40, 0.92);
+      --nav-bg: rgba(0, 0, 0, 0.85);
       --gauge-bg: rgba(255, 255, 255, 0.06);
       --radius: 12px;
       --radius-sm: 8px;
@@ -79,8 +80,8 @@
     }
 
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg-base);
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #000 0, #101828 15.71%, #020406 29.27%, #101828 45.44%, #030508 60.75%, #101828 75.45%, #070b13 87.4%, #101828 100%);
       color: var(--text-primary);
       line-height: 1.6;
       min-height: 100vh;
@@ -124,9 +125,9 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 24px;
-      background: var(--nav-bg);
+      background: rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border)
+      border-bottom: 1px solid rgba(234, 236, 240, 0.08)
     }
 
     .nav-brand {
@@ -206,7 +207,7 @@
     }
 
     .unified-scan-btn {
-      background: linear-gradient(135deg, var(--accent), var(--cyfirma-purple));
+      background: linear-gradient(135deg, #4a0c8d, #072359);
       color: #fff !important;
       border: none;
       box-shadow: 0 0 15px rgba(136, 56, 221, 0.3)
