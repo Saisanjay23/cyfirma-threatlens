@@ -16,9 +16,19 @@
 --cyfirma-red:#CE202C;--cyfirma-purple:#8838DD;--cyfirma-navy:#072359;
 --text-primary:#F1F5F9;--text-muted:#94A3B8;--text-dim:#4B5563;
 --border:rgba(255,255,255,0.08);--border-focus:rgba(59,130,246,0.5);
+--nav-bg:rgba(11,14,26,0.82);--gauge-bg:rgba(255,255,255,0.06);
 --radius:12px;--radius-sm:8px;--radius-pill:50px;
 --shadow:0 4px 24px rgba(0,0,0,0.3);--shadow-lg:0 8px 40px rgba(0,0,0,0.5);
 --transition:200ms cubic-bezier(.4,0,.2,1);
+}
+[data-theme="light"]{
+--bg-base:#F8FAFC;--bg-surface:#FFFFFF;--bg-elevated:#F1F5F9;
+--accent:#2563EB;--accent-glow:#3B82F6;--accent-soft:rgba(37,99,235,0.12);
+--danger:#DC2626;--warning:#D97706;--success:#059669;--critical:#B91C1C;
+--text-primary:#0F172A;--text-muted:#475569;--text-dim:#5F738C;
+--border:rgba(0,0,0,0.08);--border-focus:rgba(37,99,235,0.5);
+--nav-bg:rgba(248,250,252,0.85);--gauge-bg:rgba(0,0,0,0.06);
+--shadow:0 4px 24px rgba(0,0,0,0.04);--shadow-lg:0 8px 40px rgba(0,0,0,0.08);
 }
 html{font-size:14px;scroll-behavior:smooth}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-base);color:var(--text-primary);line-height:1.6;min-height:100vh;overflow-x:hidden}
@@ -29,15 +39,18 @@ a{color:var(--accent);text-decoration:none}
 ::-webkit-scrollbar-track{background:var(--bg-base)}
 ::-webkit-scrollbar-thumb{background:var(--text-dim);border-radius:3px}
 /* NAV */
-.nav{position:fixed;top:0;left:0;right:0;height:64px;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(11,14,26,0.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav{position:fixed;top:0;left:0;right:0;height:64px;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--nav-bg);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .nav-brand{display:flex;align-items:center;gap:10px}
 .nav-brand svg{width:36px;height:36px}
 .nav-brand .wordmark{font-size:18px;font-weight:700;letter-spacing:-0.02em}
 .nav-brand .wordmark span{color:var(--cyfirma-red)}
 .nav-brand .labs-badge{background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);letter-spacing:0.08em;margin-left:6px}
-.nav-links{display:flex;gap:6px}
+.nav-links{display:flex;gap:6px;align-items:center}
 .nav-links a{padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:var(--text-muted);transition:var(--transition)}
 .nav-links a:hover,.nav-links a.active{color:var(--text-primary);background:var(--bg-elevated)}
+.theme-toggle{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-primary);padding:0;border-radius:50%;cursor:pointer;width:34px;height:34px;display:flex;align-items:center;justify-content:center;transition:var(--transition);font-size:16px;margin-left:8px}
+.theme-toggle:hover{background:var(--bg-surface);border-color:var(--accent);transform:scale(1.05)}
+.unified-scan-btn{background:linear-gradient(135deg,var(--accent),var(--cyfirma-purple));color:#fff !important;border:none;box-shadow:0 0 15px rgba(136,56,221,0.3)}
 /* MAIN */
 .main{max-width:1200px;margin:0 auto;padding:88px 24px 40px}
 /* HERO */
@@ -184,18 +197,33 @@ a{color:var(--accent);text-decoration:none}
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-brand">
-    <svg viewBox="0 0 36 36" fill="none"><path d="M18 2L4 10v16l14 8 14-8V10L18 2z" fill="#CE202C" opacity="0.9"/><path d="M18 6l-10 6v12l10 6 10-6V12L18 6z" fill="#0B0E1A"/><circle cx="18" cy="18" r="4" fill="#CE202C"/><line x1="18" y1="8" x2="18" y2="14" stroke="#CE202C" stroke-width="1.5"/><line x1="18" y1="22" x2="18" y2="28" stroke="#CE202C" stroke-width="1.5"/><line x1="10" y1="18" x2="14" y2="18" stroke="#CE202C" stroke-width="1.5"/><line x1="22" y1="18" x2="26" y2="18" stroke="#CE202C" stroke-width="1.5"/></svg>
+    <svg viewBox="0 0 36 36" fill="none"><path d="M18 2L4 10v16l14 8 14-8V10L18 2z" fill="#CE202C" opacity="0.9"/><path d="M18 6l-10 6v12l10 6 10-6V12L18 6z" fill="var(--bg-base)"/><circle cx="18" cy="18" r="4" fill="#CE202C"/><line x1="18" y1="8" x2="18" y2="14" stroke="#CE202C" stroke-width="1.5"/><line x1="18" y1="22" x2="18" y2="28" stroke="#CE202C" stroke-width="1.5"/><line x1="10" y1="18" x2="14" y2="18" stroke="#CE202C" stroke-width="1.5"/><line x1="22" y1="18" x2="26" y2="18" stroke="#CE202C" stroke-width="1.5"/></svg>
     <div class="wordmark"><span>CYFIRMA</span> ThreatLens<span class="labs-badge">LABS</span></div>
   </div>
   <div class="nav-links">
-    <a href="#" class="active" onclick="switchPage('tools',this);return false">Security Tools</a>
+    <a href="#" class="active unified-scan-btn" onclick="switchPage('unified',this);return false">Attack Surface</a>
+    <a href="#" onclick="switchPage('tools',this);return false">Deep Dive Tools</a>
     <a href="#" onclick="switchPage('ioc',this);return false">IOC Radar</a>
     <a href="#" onclick="switchPage('cve',this);return false">CVE Radar</a>
+    <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Theme">🌞</button>
   </div>
 </nav>
 
+<!-- UNIFIED SCAN PAGE -->
+<main class="main page-section" id="page-unified">
+  <div class="hero">
+    <h1>Executive Attack Surface Scan</h1>
+    <p>Enter any domain name to instantly compile a comprehensive, 360-degree threat report across infrastructure, brand impersonation, and exposed credentials.</p>
+  </div>
+  <div class="search-bar" style="max-width:900px;margin:32px auto">
+    <input type="text" id="unifiedInput" placeholder="Enter target organization domain (e.g., cyfirma.com)" aria-label="Domain">
+    <button class="btn-scan" onclick="runUnifiedScan()" style="font-size:16px;padding:16px 36px">🚀 INITIATE SCAN</button>
+  </div>
+  <div id="unifiedResults" style="max-width:1200px;margin:20px auto"></div>
+</main>
+
 <!-- MAIN -->
-<main class="main">
+<main class="main page-section" id="page-tools" style="display:none">
   <div class="hero">
     <h1>Free Security Tools — Investigate Threats Fast</h1>
     <p>Next-generation tools for investigating phishing, malware, account breaches, and infrastructure vulnerabilities. Powered by open intelligence.</p>
@@ -538,11 +566,12 @@ async function scanVPN(){
 const ip=document.getElementById('vpnInput').value.trim();if(!ip){showToast('Enter an IP address','error');return}
 const el=document.getElementById('vpnResults');showLoading(el);
 try{
-const data=await cachedFetch(`http://ip-api.com/json/${ip}?fields=66846719`);
+const [d1,d2]=await Promise.all([cachedFetch(`http://ip-api.com/json/${ip}?fields=66846719`).catch(()=>null),cachedFetch(`https://ipinfo.io/${ip}/json`).catch(()=>null)]);
 hideLoading(el);
-if(!data||data.status==='fail'){showError(el,'Invalid IP: '+(data?.message||''));return}
+const data={...d1,...d2};
+if(!data || (!d1 && !d2) || data.status==='fail'){showError(el,'Invalid IP or lookup failed. (Check HTTPS mixed content or adblockers)');return}
 const proxy=data.proxy||false;const hosting=data.hosting||false;const mobile=data.mobile||false;
-const isp=data.isp||'Unknown';const org=data.org||isp;const asn=data.as||'';const country=data.country||'';const cc=data.countryCode||'';
+const isp=data.isp||data.org||'Unknown';const org=data.org||isp;const asn=data.as||'';const country=(d1?d1.country:data.region)||data.country||'';const cc=data.countryCode||(d2?d2.country:'')||'';
 const seed=hashStr(ip);const rng=mulberry32(seed);
 // Generate sparkline data
 const sparkData=Array.from({length:24},()=>Math.floor(rng()*100));
@@ -1023,19 +1052,155 @@ ${daysToExpiry!=='-'&&parseInt(daysToExpiry)<90?'<li class="critical">Domain exp
 showToast(`Domain intel complete for ${domain}`);
 }
 
+// ===== THEME TOGGLE =====
+function toggleTheme(){
+  const html=document.documentElement;
+  const btn=document.getElementById('themeToggleBtn');
+  if(html.getAttribute('data-theme')==='light'){html.removeAttribute('data-theme');btn.textContent='🌞'}
+  else{html.setAttribute('data-theme','light');btn.textContent='🌙'}
+}
+
 // ===== PAGE SWITCHING =====
 function switchPage(page,link){
  document.querySelectorAll('.page-section').forEach(p=>p.style.display='none');
  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
  if(link)link.classList.add('active');
- if(page==='tools')document.querySelector('#page-tools').style.display='';
+ if(page==='tools')document.getElementById('page-tools').style.display='';
+ else if(page==='unified')document.getElementById('page-unified').style.display='';
  else if(page==='ioc')document.getElementById('page-ioc').style.display='';
  else if(page==='cve')document.getElementById('page-cve').style.display='';
  window.scrollTo(0,0);
 }
-// Tag main tools page
-document.querySelector('main.main').id='page-tools';
-document.querySelector('main.main').classList.add('page-section');
+
+// ===== UNIFIED SCAN (EXECUTIVE DASHBOARD) =====
+async function runUnifiedScan(){
+  const domain=document.getElementById('unifiedInput').value.trim().toLowerCase().replace(/^https?:\/\//,'').replace(/\/.*/,'');
+  if(!domain||!domain.includes('.')){showToast('Enter a valid domain','error');return}
+  const el=document.getElementById('unifiedResults');
+  
+  el.innerHTML=`<div class="loader-wrap" style="padding:100px 0"><div class="radar-sweep" style="width:140px;height:140px"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="var(--accent-soft)" stroke-width="2"/><circle cx="50" cy="50" r="30" fill="none" stroke="var(--accent-soft)" stroke-width="1"/><circle cx="50" cy="50" r="15" fill="none" stroke="var(--accent-soft)" stroke-width="1"/><circle cx="50" cy="50" r="3" fill="var(--accent)"/><path d="M50 50 L50 5 A45 45 0 0 1 88 25 Z" fill="var(--accent-soft)"/></svg></div>
+  <div class="loader-text" id="unifiedText" style="font-size:16px;margin-top:24px;color:var(--text-primary)">Initializing Orchestration Engine...</div>
+  <div style="display:flex;gap:12px;margin-top:20px" id="scanModules">
+    <span class="badge badge-warn" id="st-infra">Infrastructure</span>
+    <span class="badge badge-warn" id="st-mail">Email Security</span>
+    <span class="badge badge-warn" id="st-brand">Brand Protection</span>
+    <span class="badge badge-warn" id="st-leak">Data Leaks</span>
+  </div></div>`;
+  
+  let i=0;const msgs=["Querying DNS records...","Analyzing attack surface...","Checking DMARC policies...","Scanning dark web breaches...","Detecting lookalike domains..."];
+  const lInt=setInterval(()=>{const t=document.getElementById('unifiedText');if(t){t.textContent=msgs[i%msgs.length];i++}},800);
+
+  // 1. INFRASTRUCTURE & VULNS
+  let ip=null,ports=[],vulns=[],cpes=[];
+  try {
+    const dns=await cachedFetch(`https://dns.google/resolve?name=${domain}&type=A`).catch(()=>null);
+    if(dns&&dns.Answer)ip=dns.Answer.find(a=>a.type===1)?.data;
+    if(ip){
+       const shodan=await fetch(`https://internetdb.shodan.io/${ip}`).then(r=>r.ok?r.json():null).catch(()=>null);
+       if(shodan){ports=shodan.ports||[];vulns=shodan.vulns||[];cpes=shodan.cpes||[]}
+    }
+    document.getElementById('st-infra').className='badge badge-pass';
+  }catch(e){document.getElementById('st-infra').className='badge badge-fail'}
+
+  // 2. EMAIL SECURITY
+  let mxCnt=0,spf=null,dmarc=null,dmarcPol='';
+  try {
+    const [mxR,txtR,dmarcR]=await Promise.all([
+      cachedFetch(`https://dns.google/resolve?name=${domain}&type=MX`).catch(()=>({})),
+      cachedFetch(`https://dns.google/resolve?name=${domain}&type=TXT`).catch(()=>({})),
+      cachedFetch(`https://dns.google/resolve?name=_dmarc.${domain}&type=TXT`).catch(()=>({}))
+    ]);
+    mxCnt=(mxR.Answer||[]).filter(a=>a.type===15).length;
+    const txtRe=(txtR.Answer||[]).filter(a=>a.type===16).map(a=>a.data.replace(/"/g,''));
+    spf=txtRe.find(t=>t.startsWith('v=spf1'))||null;
+    const dmarcRe=(dmarcR.Answer||[]).filter(a=>a.type===16).map(a=>a.data.replace(/"/g,''));
+    dmarc=dmarcRe.find(t=>t.startsWith('v=DMARC1'))||null;
+    if(dmarc) dmarcPol=(dmarc.match(/p=([^;]+)/)||[])[1]||'none';
+    document.getElementById('st-mail').className='badge badge-pass';
+  }catch(e){document.getElementById('st-mail').className='badge badge-fail'}
+
+  // 3. BRAND PROTECTION (Top 25 Impersonations)
+  let fakeReg=0;
+  try {
+    const cand=generateImpersonations(domain).slice(0,25);
+    const results=await Promise.allSettled(cand.map(c=>checkDNSResolve(c.domain)));
+    fakeReg=results.filter(r=>r.status==='fulfilled'&&r.value!==null).length;
+    document.getElementById('st-brand').className='badge badge-pass';
+  }catch(e){document.getElementById('st-brand').className='badge badge-fail'}
+
+  // 4. DATA LEAKS
+  let breachCount=0;const targetEmail='admin@'+domain;
+  try {
+    const br=await fetch(`https://api.xposedornot.com/v1/check-email/${encodeURIComponent(targetEmail)}`).then(r=>r.ok?r.json():null).catch(()=>null);
+    if(br&&br.breaches) breachCount=br.breaches.flat().length;
+    document.getElementById('st-leak').className='badge badge-pass';
+  }catch(e){document.getElementById('st-leak').className='badge badge-fail'}
+
+  clearInterval(lInt);
+
+  // SCORING
+  let score=100;
+  if(vulns.length>0) score-=40;
+  else if(ports.length>5) score-=10;
+  if(!spf||spf.includes('+all')||spf.includes('?all')) score-=20;
+  if(!dmarc||dmarcPol==='none') score-=20;
+  if(fakeReg>0) score-=10;
+  if(breachCount>0) score-=5;
+  score=Math.max(0,score);
+  const grade=score>=90?'A':score>=80?'B':score>=70?'C':score>=50?'D':'F';
+  const gradeColor=score>=80?'var(--success)':score>=60?'var(--warning)':'var(--danger)';
+
+  // REPORT
+  el.innerHTML=`
+  <div style="text-align:center;margin-bottom:32px;animation:fadeUp .4s ease">
+    <div class="grade-circle" style="border-color:${gradeColor};color:${gradeColor};width:140px;height:140px;font-size:56px;background:var(--gauge-bg)">${grade}</div>
+    <h2 style="font-size:24px;margin-bottom:4px">${domain.toUpperCase()}</h2>
+    <div style="color:var(--text-muted)">Executive Attack Surface Report \u00b7 Overall Score: ${score}/100</div>
+  </div>
+  
+  <div class="results-grid cols-3" style="margin-bottom:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;">
+    
+    <div class="card" style="animation-delay:100ms;border-top:4px solid ${vulns.length?'var(--danger)':'var(--success)'}">
+      <div class="card-header"><div class="icon" style="background:rgba(59,130,246,0.12)">\ud83c\udf10</div><h3>Infrastructure & Network</h3></div>
+      ${detailRow('Resolved IP',ip||'<span style="color:var(--danger)">Unresolved</span>',true)}
+      ${detailRow('Open Ports',ports.length?'<span class="mono">'+ports.length+' exposed</span>':badge('Clean')+' None')}
+      ${detailRow('Known CVEs',vulns.length?'<strong style="color:var(--danger)">'+vulns.length+' unpatched</strong>':badge('Clean')+' 0 found')}
+      ${detailRow('Tech Stack',cpes.length?cpes.slice(0,2).join(', ')+'...':'Undetected')}
+      ${vulns.length?'<div style="margin-top:12px;font-size:11px;color:var(--danger)">\u26a0\ufe0f Critical patching required immediately.</div>':''}
+    </div>
+
+    <div class="card" style="animation-delay:200ms;border-top:4px solid ${dmarcPol!=='reject'?'var(--danger)':'var(--success)'}">
+      <div class="card-header"><div class="icon" style="background:rgba(139,92,246,0.12)">\ud83d\udce7</div><h3>Email Security Profile</h3></div>
+      ${detailRow('MX Records',mxCnt?badge('Pass')+' Active':badge('Fail'))}
+      ${detailRow('SPF Enforcement',spf?(spf.includes('-all')||spf.includes('~all')?badge('Pass')+' strict':badge('Fail')+' soft'):badge('Fail')+' Missing')}
+      ${detailRow('DMARC Policy',dmarc?(dmarcPol==='reject'?badge('Pass')+' reject':badge('Warn')+' '+dmarcPol):badge('Fail')+' Missing')}
+      <div style="margin-top:12px;font-size:11px;color:var(--text-muted)">Evaluates defenses against external email spoofing.</div>
+    </div>
+
+    <div class="card" style="animation-delay:300ms;border-top:4px solid ${fakeReg>0||breachCount>0?'var(--warning)':'var(--success)'}">
+      <div class="card-header"><div class="icon" style="background:rgba(245,158,11,0.12)">\ud83d\udd75\ufe0f</div><h3>Brand & Identity</h3></div>
+      ${detailRow('Lookalike Domains',fakeReg>0?'<strong style="color:var(--danger)">'+fakeReg+' registered domains</strong>':badge('Pass')+' 0 found')}
+      ${detailRow('Credential Leaks',breachCount>0?'<strong style="color:var(--warning)">Admin in '+breachCount+' breaches</strong>':badge('Clean')+' 0 found')}
+      <div style="margin-top:12px;font-size:11px;color:var(--text-muted)">Impersonation check scoped to top 25 high-risk homoglyphs.</div>
+    </div>
+
+  </div>
+  
+  <div class="card full-width" style="animation-delay:400ms">
+    <div class="card-header"><div class="icon" style="background:var(--accent-soft)">\ud83d\udcdd</div><h3>Executive Recommendations</h3></div>
+    <ul class="rec-list">
+      ${vulns.length?'<li class="critical">Immediately patch the '+vulns.length+' vulnerabilities detected on exposed infrastructure ('+ip+').</li>':''}
+      ${ports.length>3?'<li class="warn">Review the '+ports.length+' open internet-facing ports and restrict external access via firewall.</li>':''}
+      ${(!spf||spf.includes('+all')||spf.includes('?all'))?'<li class="critical">Deploy strict SPF (-all) to prevent unauthorized senders from using the domain.</li>':''}
+      ${(!dmarc||dmarcPol==='none')?'<li class="critical">Enforce DMARC (p=reject) to protect clients from receiving spoofed phishing emails.</li>':''}
+      ${fakeReg>0?'<li class="warn">Investigate the '+fakeReg+' active lookalike domains for active phishing campaigns targeting your brand.</li>':''}
+      ${breachCount>0?'<li class="warn">Mandate password resets and 2FA for all administrative accounts due to external credential leaks.</li>':''}
+      ${(score>=90)?'<li style="border-left-color:var(--success)">No major public attack surface issues identified. Maintain current security posture.</li>':''}
+    </ul>
+    <div style="margin-top:20px;text-align:center"><button class="btn-scan" onclick="document.querySelector(\'.nav-links a:nth-child(2)\').click()" style="background:transparent;border:1px solid var(--accent);color:var(--accent);margin:0 auto">\u2192 Switch to Deep Dive Tools</button></div>
+  </div>`;
+  showToast('Executive Scan Complete for '+domain);
+}
 
 // ===== IOC RADAR =====
 function detectIOCType(input){
